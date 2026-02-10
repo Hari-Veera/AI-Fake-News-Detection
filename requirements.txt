@@ -1,5 +1,7 @@
-pandas
-numpy
+streamlit
 scikit-learn
 nltk
+pillow
+pytesseract
+speechrecognition
 
