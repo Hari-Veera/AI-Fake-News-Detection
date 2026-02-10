@@ -40,20 +40,25 @@ st.set_page_config(
 )
 
 # -------------------- UI --------------------
-st.markdown("## 🔍 AI Fake News Detection")
-st.caption(
-    "DL classifier for detecting fake news using text, voice, or images."
+st.set_page_config(
+    page_title="AI Fake News Detection System",
+    layout="centered"
 )
 
+st.title("📰 AI Fake News Detection System")
+st.caption("Give the news in any form. The system does everything automatically.")
+
 input_type = st.radio(
-    "Select input method:",
-    ["Text", "Voice", "Image"],
+    "How would you like to give the news?",
+    ["Type or Paste Text", "Speak the News", "Upload News Image"],
     horizontal=True
 )
 
-# -------------------- TEXT INPUT --------------------
-if input_type == "Text":
-    user_input = st.chat_input("Enter a news headline or article...")
+# -------------------- TEXT INPUT (BOTTOM CHAT INPUT) --------------------
+if input_type == "Type or Paste Text":
+    st.markdown("✍️ **Type or paste the news below**")
+
+    user_input = st.chat_input("Type or paste news here...")
 
     if user_input:
         with st.chat_message("user"):
@@ -68,17 +73,16 @@ if input_type == "Text":
                 st.error("❌ This news is likely FAKE")
 
 # -------------------- VOICE INPUT --------------------
-elif input_type == "Voice":
-    st.info("Click the button and speak clearly (English).")
+elif input_type == "Speak the News":
+    st.markdown("🎤 **Click the button and speak clearly**")
 
-    if st.button("🎤 Start Recording"):
+    if st.button("Start Speaking"):
         recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            st.info("Listening...")
+            audio = recognizer.listen(source)
 
         try:
-            with sr.Microphone() as source:
-                st.info("Listening...")
-                audio = recognizer.listen(source, timeout=5)
-
             voice_text = recognizer.recognize_google(audio)
 
             with st.chat_message("user"):
@@ -92,29 +96,25 @@ elif input_type == "Voice":
                 else:
                     st.error("❌ This news is likely FAKE")
 
-        except sr.WaitTimeoutError:
-            st.error("⏱️ Listening timed out. Try again.")
-        except sr.UnknownValueError:
-            st.error("❌ Could not understand the voice.")
-        except Exception:
-            st.error("⚠️ Voice input not supported in this environment.")
+        except:
+            st.error("Sorry, could not understand the voice clearly.")
 
 # -------------------- IMAGE INPUT --------------------
-elif input_type == "Image":
+elif input_type == "Upload News Image":
     uploaded_image = st.file_uploader(
-        "Upload an image containing news text",
+        "Upload an image that contains news text",
         type=["png", "jpg", "jpeg"]
     )
 
     if uploaded_image:
         image = Image.open(uploaded_image)
-        st.image(image, caption="Uploaded Image", use_column_width=True)
+        st.image(image, caption="Uploaded image", use_column_width=True)
 
         extracted_text = pytesseract.image_to_string(image)
 
         if st.button("Check This News"):
             if extracted_text.strip() == "":
-                st.warning("⚠️ No readable text found in the image.")
+                st.warning("No readable text found in the image.")
             else:
                 with st.chat_message("user"):
                     st.write(extracted_text)
@@ -126,6 +126,7 @@ elif input_type == "Image":
                         st.success("✅ This news is likely REAL")
                     else:
                         st.error("❌ This news is likely FAKE")
+
 
 # -------------------- Footer --------------------
 st.markdown("---")
