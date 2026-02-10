@@ -8,6 +8,8 @@ from PIL import Image
 
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 # -------------------- Safe Voice Import --------------------
 try:
